@@ -234,6 +234,66 @@ class _TodoScreenState extends State<TodoScreen> {
     );
   }
 
+
+
+void _showUpdateDialog(BuildContext context, TodoItemModel item) {
+  final TextEditingController _editController = TextEditingController(text: item.title);
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Cập nhật công việc'),
+      content: TextField(
+        controller: _editController,
+        autofocus: true,
+        decoration: const InputDecoration(labelText: 'Nội dung mới'),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Hủy'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            final newText = _editController.text.trim();
+            if (newText.isNotEmpty) {
+              _updateItem(item.id, newText);
+            }
+            Navigator.pop(context);
+          },
+          child: const Text('Cập nhật'),
+        ),
+      ],
+    ),
+  );
+}
+
+void _showDeleteConfirmDialog(BuildContext context, int index) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Xác nhận xóa'),
+      content: const Text('Bạn có chắc chắn muốn xóa công việc này không?'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Hủy'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.pop(context);
+            _deleteItem(index);
+          },
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+          child: const Text('Xóa'),
+        ),
+      ],
+    ),
+  );
+}
+
+
+
+
   @override
   Widget build(BuildContext context) {
     String formattedTime = DateFormat("dd/MM/yyyy HH:mm:ss").format(_currentTime);
@@ -270,15 +330,101 @@ class _TodoScreenState extends State<TodoScreen> {
                     const Text("Chọn tất cả"),
                   ],
                 ),
-                ..._jobList.asMap().entries.map((entry) {
-                  return TodoItem(
-                    index: entry.key,
-                    item: entry.value,
-                    onChanged: _toggleItem,
-                    onDelete: _deleteItem,
-                    onUpdate: (id, newText) => _updateItem(id, newText),
+                ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: _jobList.length,
+                itemBuilder: (context, index) {
+                  final item = _jobList[index];
+                  return ExpansionTile(
+                    title: ListTile(
+                      leading: Checkbox(
+                        value: item.isChecked,
+                        onChanged: (value) => _toggleItem(index, value),
+                      ),
+                      title: Text(item.title),
+                    ),
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Text("Mô tả: ${item.description ?? 'Không có'}"),
+                            // Text("Bắt đầu: ${item.startTime != null ? DateFormat("dd/MM/yyyy HH:mm").format(item.startTime!) : 'Không có'}"),
+                            // Text("Kết thúc: ${item.endTime != null ? DateFormat("dd/MM/yyyy HH:mm").format(item.endTime!) : 'Không có'}"),
+                            // const SizedBox(height: 10),
+                            Column(
+                              children: [
+                                SizedBox(
+                                  width: double.infinity, // Chiều rộng bằng item
+                                  child: GestureDetector(
+                                    onTap: () => _showUpdateDialog(context, item),
+                                    child: Container(
+                                      height: 40,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        
+                                        color: const Color.fromRGBO(6, 166, 161, 1),
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                      child: Text("Sửa công việc", 
+                                        style: TextStyle(
+                                          color: Colors.white
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 10), // Khoảng cách giữa 2 nút
+                                SizedBox(
+                                  width: double.infinity, // Chiều rộng bằng item
+                                  child: GestureDetector(
+                                    onTap: () => _showDeleteConfirmDialog(context, index),
+                                    child: Container(
+                                      height: 40,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        color: const Color.fromARGB(255, 255, 0, 0),
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                      child: Text("Xóa công việc", 
+                                        style: TextStyle(
+                                          color: Colors.white
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 10), // Khoảng cách giữa 2 nút
+                                SizedBox(
+                                  width: double.infinity, // Chiều rộng bằng item
+                                  child: GestureDetector(
+                                    onTap: () {},
+                                    child: Container(
+                                      height: 40,
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        color: const Color.fromARGB(255, 3, 226, 255),
+                                        borderRadius: BorderRadius.circular(5),
+                                      ),
+                                      child: Text("Xác nhận hoàn thành", 
+                                        style: TextStyle(
+                                          color: Colors.white
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   );
-                }),
+                },
+              ),
               const SizedBox(height: 20),
               DeleteSelectedButton(onPressed: hasChecked ? _deleteCheckedItems : null),
               IconButton(

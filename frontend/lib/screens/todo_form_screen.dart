@@ -248,10 +248,16 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
                     validator: (value) => value!.isEmpty ? "Mô tả không được để trống" : null,
                   ),
 
+                  SizedBox(height: 20,),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Color.fromRGBO(6, 166, 161, 1)),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                         child: TextButton(
                           onPressed: _pickStartTime,
                           child: Text(_startTime != null
@@ -259,19 +265,27 @@ class _TodoFormScreenState extends State<TodoFormScreen> {
                               : 'Chọn giờ bắt đầu'),
                         ),
                       ),
-                      TextButton(
-                        onPressed: _pickEndTime,
-                        child: Text(_endTime != null
-                            ? 'Giờ kết thúc: ${_endTime!.format(context)}'
-                            : 'Chọn giờ kết thúc'),
-                      ),
+                      SizedBox(width: 20,),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Color.fromRGBO(6, 166, 161, 1)),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: TextButton(
+                          onPressed: _pickEndTime,
+                          child: Text(_endTime != null
+                              ? 'Giờ kết thúc: ${_endTime!.format(context)}'
+                              : 'Chọn giờ kết thúc'),
+                        ),
+                      )
 
                     ],
                   ),
                 ],
               ),
 
-              const SizedBox(height: 200),
+              // const SizedBox(height: 200),
               GestureDetector(
                 onTap: () => _handleSubmit(),
                 child: Container(

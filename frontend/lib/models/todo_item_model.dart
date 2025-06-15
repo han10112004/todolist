@@ -4,9 +4,11 @@ class TodoItemModel {
   final String description;
   final DateTime startTime;
   final DateTime? endTime;
+  
 
   String text;
   bool isChecked;
+  bool? isExpanded;
 
   TodoItemModel({
     required this.id,
@@ -16,6 +18,7 @@ class TodoItemModel {
     this.endTime,
     this.text = '',
     this.isChecked = false,
+    this.isExpanded = false
   }) {
     text = title;
   }
